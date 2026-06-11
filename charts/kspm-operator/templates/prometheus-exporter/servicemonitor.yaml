@@ -1,0 +1,21 @@
+{{- $components := fromYaml (include "components" .) }}
+{{- if $components.prometheusExporter.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Values.prometheusExporter.name }}
+  namespace: {{ .Values.ksNamespace }}
+  labels:
+    {{- include "kspm-operator.labels" (dict "Chart" .Chart "Release" .Release "Values" .Values "app" .Values.prometheusExporter.name "tier" .Values.global.namespaceTier) | nindent 4 }}
+spec:
+  endpoints:
+  - interval: 60s
+    path: /metrics
+    targetPort: 8080
+  namespaceSelector:
+    matchNames:
+      -  {{ .Values.ksNamespace }}
+  selector:
+    matchLabels:
+      {{- include "kspm-operator.selectorLabels" (dict "Chart" .Chart "Release" .Release "Values" .Values "app" .Values.prometheusExporter.name) | nindent 6 }}
+{{ end }}
