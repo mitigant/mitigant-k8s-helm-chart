@@ -10,8 +10,7 @@ The KSPM operator deploys a suite of Kubescape-based microservices into a Kubern
 - **Vulnerability scanning** — container image CVE analysis via Grype
 - **Runtime observability** — eBPF-based workload monitoring via the node agent
 - **Network policy generation** — automated network policy recommendations
-- **Malware detection** — ClamAV-based file scanning on nodes
-- **Runtime detection** — real-time threat detection at the node level
+
 
 ## Repository Structure
 
