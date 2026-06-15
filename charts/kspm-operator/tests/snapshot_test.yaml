@@ -10,8 +10,6 @@ tests:
       unittest: true
       account: 9e6c0c2c-6bd0-4919-815b-55030de7c9a0
       accessKey: f304d73b-d43c-412b-82ea-e4c859493ce6
-      alertCRD:
-        installDefault: true
       capabilities:
         configurationScan: enable
         continuousScan: enable
@@ -21,9 +19,6 @@ tests:
         vexGeneration: enable
         runtimeObservability: enable
         networkPolicyService: enable
-        runtimeDetection: enable
-        httpDetection: enable
-        malwareDetection: enable
         nodeProfileService: enable
         seccompProfileService: enable
         autoUpgrading: enable
@@ -94,8 +89,6 @@ tests:
       unittest: true
       account: 9e6c0c2c-6bd0-4919-815b-55030de7c9a0
       accessKey: f304d73b-d43c-412b-82ea-e4c859493ce6
-      alertCRD:
-        installDefault: true
       capabilities:
         configurationScan: enable
         nodeScan: enable
@@ -104,8 +97,6 @@ tests:
         vexGeneration: disable
         runtimeObservability: enable
         networkPolicyService: enable
-        runtimeDetection: disable
-        malwareDetection: disable
         nodeProfileService: disable
         autoUpgrading: disable
         prometheusExporter: disable

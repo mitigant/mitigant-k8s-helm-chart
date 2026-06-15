@@ -60,9 +60,6 @@ spec:
       {{- if .Values.volumes }}
       {{- toYaml .Values.volumes | nindent 8 }}
       {{- end }}
-      {{- if .Values.clamav.volumes }}
-      {{- toYaml .Values.clamav.volumes | nindent 8 }}
-      {{- end }}
         - name: {{ $components.cloudSecret.name }}
           secret:
             secretName: {{ $components.cloudSecret.name }}
@@ -95,22 +92,6 @@ spec:
             secretName: {{ $components.customCaCertificates.name }}
         {{- end }}
       containers:
-        {{- if $components.clamAV.enabled }}
-        - name: {{ .Values.clamav.name }}
-          image: "{{ .Values.clamav.image.repository }}:{{ .Values.clamav.image.tag }}"
-          imagePullPolicy: {{ .Values.clamav.image.pullPolicy }}
-          securityContext:
-            runAsUser: 0
-            capabilities:
-              add:
-                - SYS_PTRACE
-          resources:
-{{ toYaml .Values.clamav.resources | indent 12 }}
-          {{- if .Values.clamav.volumeMounts }}
-          volumeMounts:
-            {{- toYaml .Values.clamav.volumeMounts | nindent 10 }}
-          {{- end }}
-        {{- end }}
         - name: {{ .Values.nodeAgent.name }}
           image: "{{ .Values.nodeAgent.image.repository }}:{{ .Values.nodeAgent.image.tag }}"
           imagePullPolicy: {{ .Values.nodeAgent.image.pullPolicy }}
@@ -148,10 +129,6 @@ spec:
             - name: OTEL_COLLECTOR_SVC
               value: "otel-collector:4318"
             {{- end }}
-            {{- end }}
-            {{- if $components.clamAV.enabled }}
-            - name: CLAMAV_SOCKET
-              value: "/clamav/clamd.sock"
             {{- end }}
             {{- if ne .Values.global.overrideRuntimePath "" }}
             - name: RUNTIME_PATH

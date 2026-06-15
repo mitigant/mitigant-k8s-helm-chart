@@ -11,7 +11,6 @@ The KSPM operator deploys a suite of Kubescape-based microservices into a Kubern
 - **Runtime observability** — eBPF-based workload monitoring via the node agent
 - **Network policy generation** — automated network policy recommendations
 
-
 ## Repository Structure
 
 ```
@@ -19,11 +18,8 @@ charts/
 ├── kspm-operator/            Main application chart
 │   ├── templates/            Kubernetes manifests for all components
 │   ├── assets/               Static config assets (cronjob templates, egress rules)
-│   ├── clamav/               ClamAV daemon configuration
 │   └── tests/                Helm snapshot tests
 └── dependency_chart/         CRD sub-charts
-    ├── clustered-crds/       RuntimeRuleBinding CRD (cluster-scoped)
-    ├── namespaced-crds/      RuntimeRuleBinding CRD (namespace-scoped)
     ├── operatorcommand-crds/ OperatorCommand CRD
     └── servicescanresult-crds/ ServiceScanResult CRD
 ```
@@ -38,11 +34,10 @@ charts/
 | kollector | StatefulSet | Data collector, reports to Mitigant cloud |
 | gateway | Deployment | Relays cloud notifications to the operator |
 | storage | Deployment + APIService | Aggregated API server for internal state |
-| node-agent | DaemonSet | eBPF runtime observability and detection |
+| node-agent | DaemonSet | eBPF runtime observability |
 | synchronizer | Deployment | Syncs cluster data with the Mitigant backend |
 | otel-collector | Deployment | OpenTelemetry metrics pipeline |
 | grype-offline-db | Deployment | Offline Grype vulnerability database |
-| clamav | Sidecar | Malware detection (runs alongside node-agent) |
 
 ## Prerequisites
 
@@ -75,8 +70,6 @@ Key values to configure at install time:
 | `capabilities.configurationScan` | Enable config scanning | `enable` |
 | `capabilities.vulnerabilityScan` | Enable image vuln scanning | `enable` |
 | `capabilities.runtimeObservability` | Enable eBPF runtime monitoring | `enable` |
-| `capabilities.runtimeDetection` | Enable runtime threat detection | `disable` |
-| `capabilities.malwareDetection` | Enable ClamAV malware scanning | `disable` |
 | `capabilities.networkPolicyService` | Enable network policy generation | `enable` |
 | `global.networkPolicy.enabled` | Deploy NetworkPolicy resources | `false` |
 | `global.httpsProxy` | HTTPS proxy URL | — |
@@ -99,7 +92,6 @@ helm uninstall kspm-operator --namespace mitigant
 CRDs are not removed automatically. To clean them up:
 
 ```bash
-kubectl delete crd runtimerulebindings.kubescape.io
 kubectl delete crd operatorcommands.kubescape.io
 kubectl delete crd servicescanresults.kubescape.io
 ```

@@ -92,11 +92,8 @@ capabilities:
   #
   runtimeObservability: enable
   networkPolicyService: enable
-  runtimeDetection: disable
-  malwareDetection: disable
   nodeProfileService: disable
   admissionController: disable
-  httpDetection: disable
   seccompProfileService: enable
   manageWorkloads: disable
 
@@ -128,12 +125,6 @@ configurations:
     enabled: true
     daemonset: 100000100  # PriorityClass of the DaemonSet, this should be higher than the other components so the DaemonSet will schedule on all nodes
 
-
-# installation of the alertCRD chart
-alertCRD:
-  installDefault: false # install the default CRD
-  scopeClustered: true # it is better to have the CRDs in the cluster scope
-  scopeNamespaced: false # enable scopeNamespaced when there are no permissions for creating cluster scoped CRDs
 
 # -----------------------------------------------------------------------------------------
 # ------------------------ Cloud Providers ------------------------------------------------
@@ -522,13 +513,7 @@ nodeAgent:
     updatePeriod: 10m # duration string
     nodeProfileInterval: 10m # duration string
     prometheusExporter: disable
-    httpExporterConfig:
-      url: http://synchronizer:8089/apis/v1/kubescape.io
-      maxAlertsPerMinute: 1000
-      method: POST
-    alertManagerExporterUrls: []
     stdoutExporter: true
-    syslogExporterURL: ""
     skipKernelVersionCheck: false
 
   # prometheus (operator) service monitor
@@ -574,9 +559,6 @@ nodeAgent:
       name: bpffs
     - mountPath: /data
       name: data
-    - mountPath: /clamav
-      name: clamrun
-      readOnly: false
 
   volumes:
     - hostPath:
@@ -616,60 +598,6 @@ nodeAgent:
   nodeSelector:
     kubernetes.io/os: linux
 
-# +++++++++++++++++++++++++++++++ ClamAV ++++++++++++++++++++++++++++++++++++++++++++++++
-clamav:
-  name: clamav
-  image:
-    # -- source code: https://github.com/kubescape/node-agent/tree/main/clamav
-    repository: quay.io/kubescape/klamav
-    tag: 1.3.1-34_alpha
-    pullPolicy: IfNotPresent
-
-  resources:
-    limits:
-      cpu: 300m
-      memory: 512Mi
-    requests:
-      cpu: 100m
-      memory: 256Mi
-
-  volumeMounts:
-    - mountPath: /var/lib/clamav-tmp
-      name: clamdb
-      readOnly: false
-    - mountPath: /run/clamav
-      name: clamrun
-      readOnly: false
-    - mountPath: /etc/clamav
-      name: etc
-      readOnly: true
-
-  volumes:
-  - name: clamdb
-    emptyDir: {}
-  - name: clamrun
-    emptyDir: {}
-  - name: etc
-    configMap:
-      name: clamav
-      items:
-      - key: clamd.conf
-        path: clamd.conf
-      - key: freshclam.conf
-        path: freshclam.conf
-
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: kubernetes.io/os
-                operator: In
-                values:
-                  - linux
-
-  nodeSelector:
-    kubernetes.io/os: linux
 # +++++++++++++++++++++++++++++ Synchronizer ++++++++++++++++++++++++++++++++++++++++++++++++
 
 synchronizer:

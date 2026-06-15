@@ -18,7 +18,6 @@ data:
         {{- end }}
       "namespace": "{{ .Values.ksNamespace }}",
       "triggersecurityframework": {{ .Values.operator.triggerSecurityFramework }},
-      "podScanGuardTime": "{{ .Values.operator.podScanGuardTime }}",
-      "httpExporterConfig": {{- .Values.nodeAgent.config.httpExporterConfig | toJson }}
+      "podScanGuardTime": "{{ .Values.operator.podScanGuardTime }}"
     }
 {{- end }}

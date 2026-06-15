@@ -1,8 +1,3 @@
-{{/* validate alertCRD.scopeClustered and alertCRD.scopeNamespaced are mutual exclusive */}}
-{{- if and .Values.alertCRD.scopeClustered .Values.alertCRD.scopeNamespaced }}
-{{- fail "alertCRD.scopeClustered and alertCRD.scopeNamespaced cannot both be true" }}
-{{- end }}
-
 {{- define "checksums" -}}
 capabilitiesConfig: {{ include (printf "%s/%s/%s" $.Template.BasePath $.Values.global.configMapsDirectory "components-configmap.yaml") . | replace .Chart.AppVersion "" | sha256sum }}
 cloudConfig: {{ include (printf "%s/%s/%s" $.Template.BasePath $.Values.global.configMapsDirectory "cloudapi-configmap.yaml") . | replace .Chart.AppVersion "" | sha256sum }}
@@ -65,8 +60,6 @@ nodeAgent:
    (eq .Values.capabilities.relevancy "enable")
    (eq .Values.capabilities.runtimeObservability "enable")
    (eq .Values.capabilities.networkPolicyService "enable")
-   (eq .Values.capabilities.runtimeDetection "enable")
-   (eq .Values.capabilities.malwareDetection "enable")
    (eq .Values.capabilities.nodeProfileService "enable")
    (eq .Values.capabilities.seccompProfileService "enable")
   }}
@@ -85,8 +78,6 @@ cloudSecret:
   name: {{ if $configurations.createCloudSecret }}"cloud-secret"{{ else }}{{ .Values.credentials.cloudSecret }}{{ end }}
 synchronizer:
   enabled: {{ $configurations.submit }}
-clamAV:
-  enabled: {{ eq .Values.capabilities.malwareDetection "enable" }}
 customCaCertificates:
   name: custom-ca-certificates
 autoUpdater:
